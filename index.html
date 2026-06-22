@@ -3,116 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>線上取號排隊系統</title>
+  <title>線上預約取號系統</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { width: 100%; height: 100vh; overflow: hidden; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    html, body { width: 100%; height: 100vh; overflow: hidden; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     .app-layout { display: flex; flex-direction: column; width: 100%; height: 100%; }
-    .app-header { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 25px 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .app-header h2 { font-size: 24px; font-weight: 700; }
-    .app-header p { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+    .app-header { background-color: #1a233a; color: white; padding: 20px; text-align: center; }
+    .app-header h2 { font-size: 20px; font-weight: 700; }
     .app-main { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .info-container { background: white; width: 100%; max-width: 450px; padding: 40px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e5e7eb; }
-    .info-title { font-size: 19px; color: #4b5563; font-weight: 600; }
-    .num-current { background-color: #e0f2fe; color: #0369a1; padding: 8px 28px; border-radius: 50px; font-weight: 800; font-size: 26px; display: inline-block; margin-top: 8px; }
-    .my-num-title { font-size: 18px; color: #9ca3af; margin-top: 30px; font-weight: bold; letter-spacing: 1px; }
-    .num-large { font-size: 96px; font-weight: 900; color: #ef4444; margin: 10px 0; font-family: 'Arial Black', sans-serif; line-height: 1; }
-    .status-banner { padding: 16px; border-radius: 14px; font-size: 20px; font-weight: bold; margin-top: 20px; }
-    .banner-waiting { background-color: #fef3c7; color: #92400e; }
-    .banner-now { background-color: #d1fae5; color: #065f46; border: 2px solid #34d399; animation: pulse 2s infinite; }
-    .banner-passed { background-color: #f3f4f6; color: #6b7280; }
-    button { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 20px; font-size: 22px; font-weight: bold; border-radius: 14px; width: 100%; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); margin-top: 15px; cursor: pointer; }
-    button:disabled { background: #d1d5db; color: #9ca3af; box-shadow: none; }
-    .app-footer { background-color: #ffffff; padding: 20px; font-size: 14px; color: #6b7280; line-height: 1.6; border-top: 1px solid #e5e7eb; text-align: left; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+    .card { background: white; width: 100%; max-width: 450px; padding: 30px 20px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; border: 1px solid #e2e8f0; }
+    
+    .status-bar { background-color: #f8fafc; padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #f1f5f9; }
+    .status-title { font-size: 13px; color: #64748b; font-weight: bold; }
+    .status-num { font-size: 42px; font-weight: 800; color: #0284c7; margin-top: 5px; }
+    
+    .my-number-box { margin: 20px 0; padding: 20px; border-radius: 16px; background-color: #f0fdf4; border: 1px dashed #bbf7d0; }
+    .my-num-title { font-size: 14px; color: #16a34a; font-weight: bold; }
+    .my-num { font-size: 54px; font-weight: 900; color: #15803d; margin-top: 5px; }
+    
+    .btn-take { background-color: #0284c7; color: white; border: none; padding: 16px; font-size: 18px; font-weight: 700; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.2); }
+    .btn-take:active { transform: scale(0.98); background-color: #0369a1; }
+    .safe-tip { font-size: 13px; color: #94a3b8; margin-top: 15px; }
   </style>
 </head>
 <body>
 
 <div class="app-layout">
   <div class="app-header">
-    <h2>雲端現場排隊系統</h2>
-    <p>線上即時查號 ‧ 輕鬆候位免留現場</p>
+    <h2>現場排隊進度查詢</h2>
   </div>
 
   <div class="app-main">
-    <div class="info-container">
-      <div id="status-area">連線中...</div>
-      <div id="action-area"></div>
-    </div>
-  </div>
+    <div class="card">
+      <div class="status-bar">
+        <div class="status-title">📢 目前叫號進度</div>
+        <div class="status-num" id="current-num">0 號</div>
+      </div>
 
-  <div class="app-footer">
-    <strong>💡 貼心提醒：</strong><br>
-    1. 系統自動更新進度，請勿關閉此分頁。<br>
-    2. 建議將此畫面「截圖儲存」，以便臨櫃核對。
+      <div id="my-number-zone" style="display:none;" class="my-number-box">
+        <div class="my-num-title">🎟️ 您的專屬號碼</div>
+        <div class="my-num" id="my-num-display">0</div>
+        <div id="wait-count-msg" style="font-size:13px; color:#16a34a; margin-top:8px; font-weight:bold;"></div>
+      </div>
+
+      <div id="action-zone">
+        <button class="btn-take" onclick="takeNumber()">點擊抽取號碼牌</button>
+      </div>
+      
+      <div class="safe-tip" id="security-msg">
+        🔒 本系統僅限現場掃描 QR Code 客戶取號
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-  // ⚠️【請將下方的網址換成你在第一步複製的 Google GAS 部署網址】
+  // ⚠️ 請記得更換成你最新部署的 Google GAS 網址！
   var GAS_URL = "https://script.google.com/macros/s/AKfycby3yH3lTMfhnaEJAdiD9QR31pomS73mwk5xGNecd19fXCDlAS9PrWvNHlFIYfDTVYi9/exec";
 
-  var todayStr = new Date().toDateString();
-  var myNumber = localStorage.getItem('my_number');
-  var savedDate = localStorage.getItem('my_number_date');
-
-  if (savedDate !== todayStr) {
-    localStorage.removeItem('my_number');
-    localStorage.removeItem('my_number_date');
-    myNumber = null;
-  }
-
-  // 使用 JSONP 跨網域撈取資料，徹底擺脫 Google 框架限制
-  function callGAS(action, callbackName) {
-    var oldScript = document.getElementById('jsonp-script');
-    if (oldScript) oldScript.remove();
-    
-    var script = document.createElement('script');
-    script.id = 'jsonp-script';
-    script.src = GAS_URL + "?action=" + action + "&callback=" + callbackName + "&_ts=" + new Date().getTime();
-    document.body.appendChild(script);
+  // 自動獲取網址後方的暗號參數
+  function getUrlToken() {
+    var urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('loc') || "";
   }
 
   function updateStatus() {
-    callGAS('getStatus', 'handleStatus');
+    var oldScript = document.getElementById('jsonp-status');
+    if (oldScript) oldScript.remove();
+    var script = document.createElement('script');
+    script.id = 'jsonp-status';
+    script.src = GAS_URL + "?action=getStatus&callback=handleStatus&_ts=" + new Date().getTime();
+    document.body.appendChild(script);
   }
 
   window.handleStatus = function(status) {
-    if (!status) return;
-    var statusHtml = "<div class='info-title'>目前現場叫號</div><div><span class='num-current'>" + status.current + " 號</span></div>";
+    if(!status) return;
+    document.getElementById('current-num').innerText = status.current + " 號";
     
-    if (myNumber) {
-      statusHtml += "<div class='my-num-title'>您的專屬號碼</div><div class='num-large'>" + myNumber + "</div>";
-      var waitCount = myNumber - status.current;
-      if (waitCount > 0) {
-        statusHtml += "<div class='status-banner banner-waiting'>前方還有 " + waitCount + " 人在等待</div>";
-      } else if (waitCount == 0) {
-        statusHtml += "<div class='status-banner banner-now'>★ 輪到您了！請立即臨櫃 ★</div>";
+    var todayStr = new Date().toDateString();
+    var savedNum = localStorage.getItem('my_queue_num');
+    var savedDate = localStorage.getItem('my_queue_date');
+    
+    if (savedNum && savedDate === todayStr) {
+      document.getElementById('my-number-zone').style.display = "block";
+      document.getElementById('my-num-display').innerText = savedNum + " 號";
+      document.getElementById('action-zone').style.display = "none";
+      
+      var wait = parseInt(savedNum) - parseInt(status.current);
+      if (wait > 0) {
+        document.getElementById('wait-count-msg').innerText = "前方還有 " + wait + " 人在等待";
+      } else if (wait === 0) {
+        document.getElementById('wait-count-msg').innerText = "🎉 輪到您了！請立即臨櫃辦理";
       } else {
-        statusHtml += "<div class='status-banner banner-passed'>此號碼已過號</div>";
+        document.getElementById('wait-count-msg').innerText = "❌ 已過號，請洽服務人員";
+        document.getElementById('wait-count-msg').style.color = "#ef4444";
       }
-      document.getElementById('action-area').innerHTML = "<p style='color:#9ca3af; font-size:16px; margin-top:15px; font-weight:600;'>本日已完成取號</p>";
-    } else {
-      statusHtml += "<div class='info-title' style='margin-top:20px; margin-bottom:15px;'>現場等待人數：<strong style='color:#0284c7; font-size:24px;'> " + (status.last - status.current) + "</strong> 人</div>";
-      document.getElementById('action-area').innerHTML = '<button onclick="getTicket()">點擊抽取號碼牌</button>';
     }
-    document.getElementById('status-area').innerHTML = statusHtml;
+  };
+
+  // 🎯 點擊抽號：把網址上的暗號直接打包傳給 Google 後台審查
+  function takeNumber() {
+    var token = getUrlToken();
+    var oldScript = document.getElementById('jsonp-take');
+    if (oldScript) oldScript.remove();
+    
+    var script = document.createElement('script');
+    script.id = 'jsonp-take';
+    // 關鍵：將 &loc=暗號 帶過去給後台
+    script.src = GAS_URL + "?action=takeNumber&loc=" + token + "&callback=handleTake&_ts=" + new Date().getTime();
+    document.body.appendChild(script);
   }
 
-  window.getTicket = function() {
-    var btn = document.querySelector('button');
-    if(btn) btn.disabled = true;
-    callGAS('takeNumber', 'handleTicket');
-  }
-
-  window.handleTicket = function(result) {
-    var nextNum = result.nextNumber;
-    localStorage.setItem('my_number', nextNum);
-    localStorage.setItem('my_number_date', todayStr);
-    myNumber = nextNum;
-    updateStatus();
-  }
+  window.handleTake = function(result) {
+    if(!result) return;
+    
+    if (result.success) {
+      // 驗證成功
+      var num = result.nextNumber;
+      localStorage.setItem('my_queue_num', num);
+      localStorage.setItem('my_queue_date', new Date().toDateString());
+      updateStatus();
+    } else {
+      // 驗證失敗：直接跳出後台回傳的拒絕警告
+      alert("⚠️ " + result.msg);
+    }
+  };
 
   updateStatus();
   setInterval(updateStatus, 5000);
