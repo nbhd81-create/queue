@@ -5,59 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>現場叫號大螢幕看板</title>
   <style>
-    /* 滿版鎖定，禁止縮放與滾動，適合電視牆、平板或螢幕長期播放 */
+    /* 完美複刻：改為截圖中優雅、乾淨的微灰藍色背景 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100vh; overflow: hidden; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    html, body { 
+      width: 100%; 
+      height: 100vh; 
+      overflow: hidden; 
+      background-color: #f1f5f9; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    }
     
     .tv-layout { display: flex; flex-direction: column; width: 100%; height: 100%; }
     
-    /* 看板頂部標題 */
+    /* 完美複刻：精緻窄版的深邃科技藍頂條 */
     .tv-header { 
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-      color: white; padding: 3vh 20px; text-align: center; border-bottom: 3px solid #38bdf8;
+      background-color: #1a233a; 
+      color: white; 
+      padding: 2.5vh 20px; 
+      text-align: center; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
-    .tv-header h1 { font-size: 5vh; font-weight: 800; letter-spacing: 4px; color: #f8fafc; }
-    .tv-header p { font-size: 2.2vh; opacity: 0.6; margin-top: 5px; letter-spacing: 2px; }
+    .tv-header h1 { font-size: 4vh; font-weight: 700; letter-spacing: 3px; color: #ffffff; }
+    .tv-header p { font-size: 2vh; opacity: 0.6; margin-top: 4px; letter-spacing: 1px; }
 
     /* 中間左右雙櫃檯區 */
     .tv-main { 
-      flex: 1; display: flex; width: 100%; background-color: #1e293b; padding: 3vh; gap: 3vh;
+      flex: 1; display: flex; width: 100%; padding: 4vh; gap: 4vh;
     }
     
-    /* 櫃檯獨立大字卡 */
+    /* 完美複刻：帶有大圓角、純白底色與輕柔立體陰影的客戶字卡 */
     .counter-card { 
-      flex: 1; background: #0f172a; border-radius: 30px; display: flex; flex-direction: column; 
-      justify-content: space-between; padding: 5vh 20px; text-align: center;
-      border: 2px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      transition: all 0.5s ease;
+      flex: 1; 
+      background: #ffffff; 
+      border-radius: 24px; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      padding: 6vh 20px; 
+      text-align: center;
+      border: 1.5px solid #e2e8f0; 
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); 
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    /* 被叫到的櫃檯會發亮閃爍（視覺動態特效） */
-    .counter-card.active-call {
-      border-color: #38bdf8;
-      box-shadow: 0 0 50px rgba(56, 189, 248, 0.4);
-      background: linear-gradient(180deg, #0f172a 0%, #0c4a6e 100%);
-    }
+    /* 灰色質感的櫃檯名稱標題 */
+    .card-title { font-size: 5.5vh; font-weight: 800; color: #475569; letter-spacing: 2px; }
 
-    .card-title { font-size: 6vh; font-weight: 800; color: #94a3b8; letter-spacing: 2px; }
-    .counter-card.active-call .card-title { color: #38bdf8; }
-
-    /* 號碼數字：放大到極致 */
+    /* 完美複刻：極致放大的明亮藍色號碼字體 */
     .card-num { 
-      font-size: 22vh; font-weight: 900; color: #ffffff; 
-      font-family: 'Impact', 'Arial Black', sans-serif; line-height: 1; margin: auto 0;
+      font-size: 24vh; 
+      font-weight: 900; 
+      color: #0284c7; 
+      font-family: 'Arial Black', -apple-system, sans-serif; 
+      line-height: 1; 
+      margin: auto 0;
     }
-    .counter-card.active-call .card-num { color: #38bdf8; animation: blink 1.5s infinite; }
 
-    .card-status { font-size: 4vh; font-weight: bold; color: #64748b; }
-    .counter-card.active-call .card-status { color: #f1f5f9; }
+    /* 底部狀態提示文字 */
+    .card-status { font-size: 3.5vh; font-weight: 700; color: #94a3b8; letter-spacing: 1px; }
 
-    /* 底部跑馬燈或提示欄 */
+    /* 🎯 智慧動態特效：當前被叫到的櫃檯卡片，會觸發截圖中的科技藍發亮外框 */
+    .counter-card.active-call {
+      border-color: #0284c7;
+      background-color: #e0f2fe; /* 輕微藍色高亮底色 */
+      box-shadow: 0 0 40px rgba(2, 132, 199, 0.25);
+      transform: scale(1.02); /* 微放大，視覺更有衝擊力 */
+    }
+    .counter-card.active-call .card-title { color: #0369a1; }
+    .counter-card.active-call .card-num { animation: blink 1.5s infinite; }
+    .counter-card.active-call .card-status { color: #0284c7; }
+
+    /* 最下方狀態列 */
     .tv-footer { 
-      background-color: #0f172a; padding: 2vh 20px; font-size: 2.5vh; color: #38bdf8; 
-      font-weight: bold; border-top: 2px solid #334155; text-align: center; letter-spacing: 1px;
+      background-color: #ffffff; 
+      padding: 1.8vh 20px; 
+      font-size: 2.2vh; 
+      color: #64748b; 
+      font-weight: 600; 
+      border-top: 1px solid #e2e8f0; 
+      text-align: center; 
+      letter-spacing: 1px;
     }
 
+    /* 閃爍動畫：提示客戶注意 */
     @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 0.7; }
@@ -70,7 +100,7 @@
 <div class="tv-layout">
   <div class="tv-header">
     <h1 id="tv-title">歡迎光臨 ‧ 現場叫號看板</h1>
-    <p>請持號碼牌依燈號至指定櫃檯辦理</p>
+    <p>請持有號碼牌，依燈號至指定櫃檯辦理業務</p>
   </div>
 
   <div class="tv-main">
@@ -88,18 +118,14 @@
   </div>
 
   <div class="tv-footer">
-    💡 提示：本看板每 3 秒自動更新進度，過號請洽服務人員。
+    🟢 系統連線正常 ‧ 本看板每 3 秒自動同步最新進度
   </div>
 </div>
 
 <script>
-  // ⚠️【請將下方的網址換成你先前複製的 Google GAS 部署網址（支援前端撈資料的那串）】
+  // ⚠️【請將下方的網址換成你先前複製的 Google GAS 部署網址】
   var GAS_URL = "https://script.google.com/macros/s/AKfycby3yH3lTMfhnaEJAdiD9QR31pomS73mwk5xGNecd19fXCDlAS9PrWvNHlFIYfDTVYi9/exec";
 
-  var lastCalledNum = -1;
-  var lastCalledCounter = "";
-
-  // 使用 JSONP 跨網域定時從 Google 試算表撈最新叫號資訊
   function updateTV() {
     var oldScript = document.getElementById('jsonp-tv');
     if (oldScript) oldScript.remove();
@@ -110,18 +136,12 @@
     document.body.appendChild(script);
   }
 
-  // 接收後台資料並渲染大螢幕
   window.handleTVData = function(status) {
     if (!status) return;
-    
-    // 從試算表 B2 儲存格撈出「目前最新的叫號」
     var currentNum = status.current; 
-    
-    // 另外向後台要求，得知現在這個號碼是哪一個櫃檯叫的（我們稍後會在 .gs 擴充）
     google_get_last_counter(currentNum);
   }
 
-  // 由於我們前端是用 JSONP，我們直接透過第二道請求去向試算表撈出 C2 的櫃檯資料
   function google_get_last_counter(currentNum) {
     var oldScript = document.getElementById('jsonp-counter');
     if (oldScript) oldScript.remove();
@@ -132,29 +152,26 @@
     document.body.appendChild(script);
     
     window.handleCounterData = function(data) {
-      var activeCounter = data.counterName; // 例如: "一號櫃檯" 或 "二號櫃檯"
+      var activeCounter = data.counterName; 
       
-      // 清除先前的發亮特效
+      // 重置發亮與底色特效
       document.getElementById('card-一號').classList.remove('active-call');
       document.getElementById('card-二號').classList.remove('active-call');
       
-      // 更新畫面的號碼
+      // 更新對應櫃檯的號碼並觸發亮藍色高亮
       if (activeCounter.indexOf("一號") > -1) {
         document.getElementById('num-一號').innerText = currentNum;
         document.getElementById('card-一號').classList.add('active-call');
-        // 沒被叫到的櫃檯維持原號碼或靜態
       } else if (activeCounter.indexOf("二號") > -1) {
         document.getElementById('num-二號').innerText = currentNum;
         document.getElementById('card-二號').classList.add('active-call');
       } else {
-        // 如果剛歸零，大家都顯示 0
         document.getElementById('num-一號').innerText = currentNum;
         document.getElementById('num-二號').innerText = currentNum;
       }
     }
   }
 
-  // 每 3 秒對齊一次後台資料
   updateTV();
   setInterval(updateTV, 3000);
 </script>
