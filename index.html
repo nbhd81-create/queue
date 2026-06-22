@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>線上取號排隊系統</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100vh; overflow: hidden; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    .app-layout { display: flex; flex-direction: column; width: 100%; height: 100%; }
+    .app-header { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 25px 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .app-header h2 { font-size: 24px; font-weight: 700; }
+    .app-header p { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+    .app-main { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .info-container { background: white; width: 100%; max-width: 450px; padding: 40px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e5e7eb; }
+    .info-title { font-size: 19px; color: #4b5563; font-weight: 600; }
+    .num-current { background-color: #e0f2fe; color: #0369a1; padding: 8px 28px; border-radius: 50px; font-weight: 800; font-size: 26px; display: inline-block; margin-top: 8px; }
+    .my-num-title { font-size: 18px; color: #9ca3af; margin-top: 30px; font-weight: bold; letter-spacing: 1px; }
+    .num-large { font-size: 96px; font-weight: 900; color: #ef4444; margin: 10px 0; font-family: 'Arial Black', sans-serif; line-height: 1; }
+    .status-banner { padding: 16px; border-radius: 14px; font-size: 20px; font-weight: bold; margin-top: 20px; }
+    .banner-waiting { background-color: #fef3c7; color: #92400e; }
+    .banner-now { background-color: #d1fae5; color: #065f46; border: 2px solid #34d399; animation: pulse 2s infinite; }
+    .banner-passed { background-color: #f3f4f6; color: #6b7280; }
+    button { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 20px; font-size: 22px; font-weight: bold; border-radius: 14px; width: 100%; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); margin-top: 15px; cursor: pointer; }
+    button:disabled { background: #d1d5db; color: #9ca3af; box-shadow: none; }
+    .app-footer { background-color: #ffffff; padding: 20px; font-size: 14px; color: #6b7280; line-height: 1.6; border-top: 1px solid #e5e7eb; text-align: left; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <div class="app-header">
+    <h2>雲端現場排隊系統</h2>
+    <p>線上即時查號 ‧ 輕鬆候位免留現場</p>
+  </div>
+
+  <div class="app-main">
+    <div class="info-container">
+      <div id="status-area">連線中...</div>
+      <div id="action-area"></div>
+    </div>
+  </div>
+
+  <div class="app-footer">
+    <strong>💡 貼心提醒：</strong><br>
+    1. 系統自動更新進度，請勿關閉此分頁。<br>
+    2. 建議將此畫面「截圖儲存」，以便臨櫃核對。
+  </div>
+</div>
+
+<script>
+  // ⚠️【請將下方的網址換成你在第一步複製的 Google GAS 部署網址】
+  var GAS_URL = "https://script.google.com/macros/s/AKfycby3yH3lTMfhnaEJAdiD9QR31pomS73mwk5xGNecd19fXCDlAS9PrWvNHlFIYfDTVYi9/exec";
+
+  var todayStr = new Date().toDateString();
+  var myNumber = localStorage.getItem('my_number');
+  var savedDate = localStorage.getItem('my_number_date');
+
+  if (savedDate !== todayStr) {
+    localStorage.removeItem('my_number');
+    localStorage.removeItem('my_number_date');
+    myNumber = null;
+  }
+
+  // 使用 JSONP 跨網域撈取資料，徹底擺脫 Google 框架限制
+  function callGAS(action, callbackName) {
+    var oldScript = document.getElementById('jsonp-script');
+    if (oldScript) oldScript.remove();
+    
+    var script = document.createElement('script');
+    script.id = 'jsonp-script';
+    script.src = GAS_URL + "?action=" + action + "&callback=" + callbackName + "&_ts=" + new Date().getTime();
+    document.body.appendChild(script);
+  }
+
+  function updateStatus() {
+    callGAS('getStatus', 'handleStatus');
+  }
+
+  window.handleStatus = function(status) {
+    if (!status) return;
+    var statusHtml = "<div class='info-title'>目前現場叫號</div><div><span class='num-current'>" + status.current + " 號</span></div>";
+    
+    if (myNumber) {
+      statusHtml += "<div class='my-num-title'>您的專屬號碼</div><div class='num-large'>" + myNumber + "</div>";
+      var waitCount = myNumber - status.current;
+      if (waitCount > 0) {
+        statusHtml += "<div class='status-banner banner-waiting'>前方還有 " + waitCount + " 人在等待</div>";
+      } else if (waitCount == 0) {
+        statusHtml += "<div class='status-banner banner-now'>★ 輪到您了！請立即臨櫃 ★</div>";
+      } else {
+        statusHtml += "<div class='status-banner banner-passed'>此號碼已過號</div>";
+      }
+      document.getElementById('action-area').innerHTML = "<p style='color:#9ca3af; font-size:16px; margin-top:15px; font-weight:600;'>本日已完成取號</p>";
+    } else {
+      statusHtml += "<div class='info-title' style='margin-top:20px; margin-bottom:15px;'>現場等待人數：<strong style='color:#0284c7; font-size:24px;'> " + (status.last - status.current) + "</strong> 人</div>";
+      document.getElementById('action-area').innerHTML = '<button onclick="getTicket()">點擊抽取號碼牌</button>';
+    }
+    document.getElementById('status-area').innerHTML = statusHtml;
+  }
+
+  window.getTicket = function() {
+    var btn = document.querySelector('button');
+    if(btn) btn.disabled = true;
+    callGAS('takeNumber', 'handleTicket');
+  }
+
+  window.handleTicket = function(result) {
+    var nextNum = result.nextNumber;
+    localStorage.setItem('my_number', nextNum);
+    localStorage.setItem('my_number_date', todayStr);
+    myNumber = nextNum;
+    updateStatus();
+  }
+
+  updateStatus();
+  setInterval(updateStatus, 5000);
+</script>
+
+</body>
+</html>
