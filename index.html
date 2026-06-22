@@ -58,10 +58,9 @@
 </div>
 
 <script>
-  // ⚠️ 請記得更換成你最新部署的 Google GAS 網址！
-  var GAS_URL = "https://script.google.com/macros/s/AKfycby3yH3lTMfhnaEJAdiD9QR31pomS73mwk5xGNecd19fXCDlAS9PrWvNHlFIYfDTVYi9/exec";
+  // 🔗 已自動為您對接最新部署的 Google GAS 網址
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbwY-RFGOvSvgiyJ4jiQomvnKJ5ENlSNla7F7aLTGvU7iAjJQlDmjuxxqVOTzDn-ehKx/exec";
 
-  // 自動獲取網址後方的暗號參數
   function getUrlToken() {
     var urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('loc') || "";
@@ -101,7 +100,6 @@
     }
   };
 
-  // 🎯 點擊抽號：把網址上的暗號直接打包傳給 Google 後台審查
   function takeNumber() {
     var token = getUrlToken();
     var oldScript = document.getElementById('jsonp-take');
@@ -109,7 +107,6 @@
     
     var script = document.createElement('script');
     script.id = 'jsonp-take';
-    // 關鍵：將 &loc=暗號 帶過去給後台
     script.src = GAS_URL + "?action=takeNumber&loc=" + token + "&callback=handleTake&_ts=" + new Date().getTime();
     document.body.appendChild(script);
   }
@@ -118,13 +115,11 @@
     if(!result) return;
     
     if (result.success) {
-      // 驗證成功
       var num = result.nextNumber;
       localStorage.setItem('my_queue_num', num);
       localStorage.setItem('my_queue_date', new Date().toDateString());
       updateStatus();
     } else {
-      // 驗證失敗：直接跳出後台回傳的拒絕警告
       alert("⚠️ " + result.msg);
     }
   };
