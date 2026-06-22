@@ -2,178 +2,196 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>現場叫號大螢幕看板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>現場叫號電視牆看板</title>
   <style>
-    /* 完美複刻：改為截圖中優雅、乾淨的微灰藍色背景 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { 
-      width: 100%; 
-      height: 100vh; 
-      overflow: hidden; 
-      background-color: #f1f5f9; 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    
-    .tv-layout { display: flex; flex-direction: column; width: 100%; height: 100%; }
-    
-    /* 完美複刻：精緻窄版的深邃科技藍頂條 */
-    .tv-header { 
-      background-color: #1a233a; 
-      color: white; 
-      padding: 2.5vh 20px; 
-      text-align: center; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-    .tv-header h1 { font-size: 4vh; font-weight: 700; letter-spacing: 3px; color: #ffffff; }
-    .tv-header p { font-size: 2vh; opacity: 0.6; margin-top: 4px; letter-spacing: 1px; }
-
-    /* 中間左右雙櫃檯區 */
-    .tv-main { 
-      flex: 1; display: flex; width: 100%; padding: 4vh; gap: 4vh;
-    }
-    
-    /* 完美複刻：帶有大圓角、純白底色與輕柔立體陰影的客戶字卡 */
-    .counter-card { 
-      flex: 1; 
-      background: #ffffff; 
-      border-radius: 24px; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between; 
-      padding: 6vh 20px; 
+    .header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      padding: 30px;
       text-align: center;
-      border: 1.5px solid #e2e8f0; 
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); 
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 5px solid #0284c7;
+    }
+    .header h1 { font-size: 46px; letter-spacing: 4px; font-weight: 900; color: #f8fafc; }
+    
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 40px;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+      background: #111827;
     }
     
-    /* 灰色質感的櫃檯名稱標題 */
-    .card-title { font-size: 5.5vh; font-weight: 800; color: #475569; letter-spacing: 2px; }
-
-    /* 完美複刻：極致放大的明亮藍色號碼字體 */
-    .card-num { 
-      font-size: 24vh; 
-      font-weight: 900; 
-      color: #0284c7; 
-      font-family: 'Arial Black', -apple-system, sans-serif; 
-      line-height: 1; 
-      margin: auto 0;
+    .counter-card {
+      background: #1e293b;
+      border: 3px solid #334155;
+      border-radius: 40px;
+      flex: 1;
+      max-width: 600px;
+      height: 85%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 50px 30px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s ease;
     }
-
-    /* 底部狀態提示文字 */
-    .card-status { font-size: 3.5vh; font-weight: 700; color: #94a3b8; letter-spacing: 1px; }
-
-    /* 🎯 智慧動態特效：當前被叫到的櫃檯卡片，會觸發截圖中的科技藍發亮外框 */
+    
+    /* 當被叫號時的閃爍發光特效 */
     .counter-card.active-call {
-      border-color: #0284c7;
-      background-color: #e0f2fe; /* 輕微藍色高亮底色 */
-      box-shadow: 0 0 40px rgba(2, 132, 199, 0.25);
-      transform: scale(1.02); /* 微放大，視覺更有衝擊力 */
+      border-color: #38bdf8;
+      background: #0c4a6e;
+      box-shadow: 0 0 80px rgba(56, 189, 248, 0.6);
+      transform: scale(1.03);
     }
-    .counter-card.active-call .card-title { color: #0369a1; }
-    .counter-card.active-call .card-num { animation: blink 1.5s infinite; }
-    .counter-card.active-call .card-status { color: #0284c7; }
-
-    /* 最下方狀態列 */
-    .tv-footer { 
-      background-color: #ffffff; 
-      padding: 1.8vh 20px; 
-      font-size: 2.2vh; 
-      color: #64748b; 
-      font-weight: 600; 
-      border-top: 1px solid #e2e8f0; 
-      text-align: center; 
-      letter-spacing: 1px;
+    
+    .counter-name { font-size: 54px; font-weight: 900; color: #94a3b8; letter-spacing: 2px; }
+    .counter-card.active-call .counter-name { color: #38bdf8; }
+    
+    .number-display {
+      font-size: 180px;
+      font-weight: 900;
+      color: #ffffff;
+      font-family: 'Impact', sans-serif;
+      text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      margin: 20px 0;
+    }
+    
+    .status-text { font-size: 32px; color: #64748b; font-weight: bold; }
+    .counter-card.active-call .status-text { color: #f1f5f9; animation: pulse 1s infinite alternate; }
+    
+    @keyframes pulse {
+      from { opacity: 0.6; } to { opacity: 1; }
     }
 
-    /* 閃爍動畫：提示客戶注意 */
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
+    /* 隱藏的聲音解鎖按鈕 */
+    #sound-lock-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.95); z-index: 9999;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    .unlock-btn {
+      background: #0284c7; color: white; border: none; padding: 24px 48px;
+      font-size: 28px; font-weight: bold; border-radius: 20px; cursor: pointer;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4);
     }
   </style>
 </head>
 <body>
 
-<div class="tv-layout">
-  <div class="tv-header">
-    <h1 id="tv-title">歡迎光臨 ‧ 現場叫號看板</h1>
-    <p>請持有號碼牌，依燈號至指定櫃檯辦理業務</p>
+<div id="sound-lock-overlay" onclick="unlockSound()">
+  <button class="unlock-btn">📣 點擊此處：開啟現場叫號語音系統</button>
+  <p style="margin-top: 20px; color: #64748b; font-size: 18px;">(依瀏覽器安全規範，需點擊一次方可啟用音效)</p>
+</div>
+
+<div class="header">
+  <h1>歡迎光臨 🔔 現場叫號看板</h1>
+</div>
+
+<div class="main-content">
+  <div id="card-c1" class="counter-card">
+    <div class="counter-name">一號櫃檯</div>
+    <div id="num-c1" class="number-display">00</div>
+    <div id="status-c1" class="status-text">準備中</div>
   </div>
 
-  <div class="tv-main">
-    <div id="card-一號" class="counter-card">
-      <div class="card-title">一號櫃檯</div>
-      <div id="num-一號" class="card-num">0</div>
-      <div class="card-status">請前往辦理</div>
-    </div>
-
-    <div id="card-二號" class="counter-card">
-      <div class="card-title">二號櫃檯</div>
-      <div id="num-二號" class="card-num">0</div>
-      <div class="card-status">請前往辦理</div>
-    </div>
-  </div>
-
-  <div class="tv-footer">
-    🟢 系統連線正常 ‧ 本看板每 3 秒自動同步最新進度
+  <div id="card-c2" class="counter-card">
+    <div class="counter-name">二號櫃檯</div>
+    <div id="num-c2" class="number-display">00</div>
+    <div id="status-c2" class="status-text">準備中</div>
   </div>
 </div>
 
 <script>
-  // ⚠️【請將下方的網址換成你先前複製的 Google GAS 部署網址】
-  var GAS_URL = "https://script.google.com/macros/s/AKfycby3yH3lTMfhnaEJAdiD9QR31pomS73mwk5xGNecd19fXCDlAS9PrWvNHlFIYfDTVYi9/exec";
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbwY-RFGOvSvgiyJ4jiQomvnKJ5ENlSNla7F7aLTGvU7iAjJQlDmjuxxqVOTzDn-ehKx/exec";
+  
+  var lastSpokenNumber = -1;
+  var isSoundUnlocked = false;
 
-  function updateTV() {
+  // 解鎖語音功能
+  function unlockSound() {
+    isSoundUnlocked = true;
+    document.getElementById('sound-lock-overlay').style.display = 'none';
+    // 播放一聲隱形音效，讓瀏覽器大門打開
+    speakText("語音系統已啟動");
+  }
+
+  // 🔊 完美的內建語音朗讀功能 (包含叮咚與語音)
+  function speakText(text) {
+    if (!isSoundUnlocked) return;
+    try {
+      window.speechSynthesis.cancel(); // 砍掉之前的排隊語音，立刻切入
+      var tts = new SpeechSynthesisUtterance(text);
+      tts.lang = 'zh-TW';
+      tts.rate = 0.9;  // 速度稍微放慢一點，比較清楚
+      tts.pitch = 1.0; 
+      window.speechSynthesis.speak(tts);
+    } catch(e) { console.log("語音播放失敗:", e); }
+  }
+
+  function checkUpdate() {
     var oldScript = document.getElementById('jsonp-tv');
     if (oldScript) oldScript.remove();
     
     var script = document.createElement('script');
     script.id = 'jsonp-tv';
-    script.src = GAS_URL + "?action=getStatus&callback=handleTVData&_ts=" + new Date().getTime();
+    script.src = GAS_URL + "?action=getStatus&callback=handleTvUpdate&_ts=" + new Date().getTime();
     document.body.appendChild(script);
   }
 
-  window.handleTVData = function(status) {
-    if (!status) return;
-    var currentNum = status.current; 
-    google_get_last_counter(currentNum);
-  }
-
-  function google_get_last_counter(currentNum) {
-    var oldScript = document.getElementById('jsonp-counter');
-    if (oldScript) oldScript.remove();
+  window.handleTvUpdate = function(data) {
+    if(!data) return;
+    var currentNum = parseInt(data.current) || 0;
     
-    var script = document.createElement('script');
-    script.id = 'jsonp-counter';
-    script.src = GAS_URL + "?action=getLiveCounter&callback=handleCounterData&_ts=" + new Date().getTime();
-    document.body.appendChild(script);
+    // 撈取當前是哪個櫃檯叫號
+    var oldScript2 = document.getElementById('jsonp-counter');
+    if (oldScript2) oldScript2.remove();
+    var script2 = document.createElement('script');
+    script2.id = 'jsonp-counter';
+    script2.src = GAS_URL + "?action=getLiveCounter&callback=handleCounterUpdate&_ts=" + new Date().getTime();
+    document.body.appendChild(script2);
     
-    window.handleCounterData = function(data) {
-      var activeCounter = data.counterName; 
+    window.handleCounterUpdate = function(counterData) {
+      var activeCounter = counterData.counterName || "一號櫃檯";
       
-      // 重置發亮與底色特效
-      document.getElementById('card-一號').classList.remove('active-call');
-      document.getElementById('card-二號').classList.remove('active-call');
-      
-      // 更新對應櫃檯的號碼並觸發亮藍色高亮
-      if (activeCounter.indexOf("一號") > -1) {
-        document.getElementById('num-一號').innerText = currentNum;
-        document.getElementById('card-一號').classList.add('active-call');
-      } else if (activeCounter.indexOf("二號") > -1) {
-        document.getElementById('num-二號').innerText = currentNum;
-        document.getElementById('card-二號').classList.add('active-call');
-      } else {
-        document.getElementById('num-一號').innerText = currentNum;
-        document.getElementById('num-二號').innerText = currentNum;
+      // 更新對應櫃檯的畫面數字
+      if (activeCounter === "一號櫃檯") {
+        document.getElementById('num-c1').innerText = currentNum;
+        document.getElementById('status-c1').innerText = "請臨櫃辦理";
+        document.getElementById('card-c1').classList.add('active-call');
+        document.getElementById('card-c2').classList.remove('active-call');
+      } else if (activeCounter === "二號櫃檯") {
+        document.getElementById('num-c2').innerText = currentNum;
+        document.getElementById('status-c2').innerText = "請臨櫃辦理";
+        document.getElementById('card-c2').classList.add('active-call');
+        document.getElementById('card-c1').classList.remove('active-call');
       }
-    }
-  }
 
-  updateTV();
-  setInterval(updateTV, 3000);
+      // 🎯 核心判斷：如果號碼有變，立刻發聲！
+      if (currentNum > 0 && currentNum !== lastSpokenNumber) {
+        lastSpokenNumber = currentNum;
+        
+        // 叮咚聲模擬 ＋ 國語發音
+        speakText("叮咚！請 " + currentNum + " 號，到 " + activeCounter + " 辦理。");
+      }
+    };
+  };
+
+  // 每 3 秒同步一次電視牆
+  setInterval(checkUpdate, 3000);
+  checkUpdate();
 </script>
 
 </body>
